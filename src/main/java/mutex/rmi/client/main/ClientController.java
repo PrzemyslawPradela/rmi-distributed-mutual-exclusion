@@ -1,4 +1,4 @@
-package mutex.rmi.client;
+package mutex.rmi.client.main;
 
 public class ClientController {
     
