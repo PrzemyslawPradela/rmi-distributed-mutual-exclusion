@@ -11,4 +11,6 @@ public interface Server extends Remote {
     String enterCriticalSection(Client clientId) throws RemoteException;
 
     String leaveCriticalSection(Client clientId) throws RemoteException;
+
+    boolean isCriticalSectionOccupied() throws RemoteException;
 }

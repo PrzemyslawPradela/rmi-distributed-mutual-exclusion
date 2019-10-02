@@ -36,7 +36,8 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.3</version>
                 <configuration>
-                    <mainClass>mutex.rmi.App</mainClass>
+                    <mainClass>mutex.rmi.server.main.StartServer</mainClass>
+                    <mainClass>mutex.rmi.server.main.StartClient</mainClass>
                 </configuration>
             </plugin>
         </plugins>

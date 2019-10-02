@@ -49,18 +49,33 @@ public class ServerController {
         errorAlert.setTitle("Błąd");
 
         startBtn.setOnAction(a -> {
-            if (ipTextField.getText().isEmpty() || portTextField.getText().isEmpty()
-                    || nameTextField.getText().isEmpty()) {
-                errorAlert.setHeaderText("Pola adresu IP, portu i nazwy nie mogą być puste!");
+            if (ipTextField.getText().isEmpty()) {
+                logsTextArea.appendText(server.getDateFormat()
+                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano adresu IP serwera\n"));
+                errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
+                errorAlert.showAndWait();
+            } else if (portTextField.getText().isEmpty()) {
+                logsTextArea.appendText(server.getDateFormat()
+                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano portu serwera\n"));
+                errorAlert.setHeaderText("Pole portu może być puste!");
+                errorAlert.showAndWait();
+            } else if (nameTextField.getText().isEmpty()) {
+                logsTextArea.appendText(server.getDateFormat()
+                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano nazwy serwera\n"));
+                errorAlert.setHeaderText("Pole nazwy nie może być puste!");
                 errorAlert.showAndWait();
             } else if (!ipAddressValidator.validate(ipTextField.getText())) {
+                logsTextArea.appendText(server.getDateFormat()
+                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tZły format adresu IP\n"));
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
             } else if (!digitsValidator.validate(portTextField.getText())) {
+                logsTextArea.appendText(server.getDateFormat()
+                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tZły format numeru portu\n"));
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                //System.setProperty("java.rmi.server.hostname", ipTextField.getText());
                 try {
                     server = new ServerApi(logsTextArea);
                     registry = LocateRegistry.createRegistry(Integer.parseInt(portTextField.getText()));
@@ -77,6 +92,8 @@ public class ServerController {
                     stopBtn.setDisable(false);
                     startBtn.setDisable(true);
                 } catch (RemoteException e) {
+                    logsTextArea.appendText(server.getDateFormat()
+                            .format(new Date(System.currentTimeMillis()) + "\tERROR\tPort " + portTextField.getText() + " jest już używany\n"));
                     errorAlert.setHeaderText("Port " + portTextField.getText() + " jest już używany!");
                     errorAlert.showAndWait();
                     e.printStackTrace();
@@ -84,7 +101,9 @@ public class ServerController {
             }
         });
 
-        stopBtn.setOnAction(a -> {
+        stopBtn.setOnAction(a ->
+
+        {
             try {
                 UnicastRemoteObject.unexportObject(registry, true);
                 logsTextArea.appendText(server.getDateFormat().format(new Date(System.currentTimeMillis()))
@@ -107,6 +126,8 @@ public class ServerController {
     public void handleExit() throws NoSuchObjectException {
         if (registryRunning) {
             UnicastRemoteObject.unexportObject(registry, true);
+            Platform.exit();
+            System.exit(0);
         } else {
             Platform.exit();
             System.exit(0);

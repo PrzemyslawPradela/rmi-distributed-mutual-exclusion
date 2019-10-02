@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - StartClient",
+            "request": "launch",
+            "mainClass": "mutex.rmi/mutex.rmi.client.main.StartClient",
+            "projectName": "RMI-Distributed-Mutual-Exclusion"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - StartServer",
+            "request": "launch",
+            "mainClass": "mutex.rmi/mutex.rmi.server.main.StartServer",
+            "projectName": "RMI-Distributed-Mutual-Exclusion"
+        }
+    ]
+}
