@@ -7,6 +7,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -48,6 +50,8 @@ public class ServerController {
     void initialize() {
         errorAlert.setTitle("Błąd");
 
+        //ipTextField.setText(ip);
+
         startBtn.setOnAction(a -> {
             if (ipTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(
@@ -71,7 +75,11 @@ public class ServerController {
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                
+                if (!SystemUtils.IS_OS_WINDOWS) {
+                    System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                }
+
                 try {
                     server = new ServerApi(logsTextArea);
                     registry = LocateRegistry.createRegistry(Integer.parseInt(portTextField.getText()));
@@ -88,8 +96,8 @@ public class ServerController {
                     stopBtn.setDisable(false);
                     startBtn.setDisable(true);
                 } catch (RemoteException e) {
-                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())
-                            + "      ERROR      Port " + portTextField.getText() + " jest już używany\n"));
+                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                            + "      ERROR      Port " + portTextField.getText() + " jest już używany\n");
                     errorAlert.setHeaderText("Port " + portTextField.getText() + " jest już używany!");
                     errorAlert.showAndWait();
                     e.printStackTrace();

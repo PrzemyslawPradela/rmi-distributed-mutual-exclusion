@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -79,37 +81,41 @@ public class ClientController {
         connectBtn.setOnAction(a -> {
             if (ipTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR     Nie podano adresu IP\n");
+                        + "      ERROR      Nie podano adresu IP\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
                 errorAlert.showAndWait();
             } else if (hostTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR     Nie podano adresu IP serwera\n");
+                        + "      ERROR      Nie podano adresu IP serwera\n");
                 errorAlert.setHeaderText("Pole adresu IP serwera nie może być puste!");
                 errorAlert.showAndWait();
             } else if (portTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR     Nie podano portu serwera\n");
+                        + "      ERROR      Nie podano portu serwera\n");
                 errorAlert.setHeaderText("Pole portu może być puste!");
                 errorAlert.showAndWait();
             } else if (serverNameTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR     Nie podano nazwy serwera\n");
+                        + "      ERROR      Nie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy serwera nie może być puste!");
                 errorAlert.showAndWait();
             } else if (!ipAddressValidator.validate(ipTextField.getText())
                     || !ipAddressValidator.validate(hostTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR     Zły format adresu IP\n");
+                        + "      ERROR      Zły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
             } else if (!digitsValidator.validate(portTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR     Zły format numeru portu\n");
+                        + "      ERROR      Zły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                
+                if (!SystemUtils.IS_OS_WINDOWS) {
+                    System.setProperty("java.rmi.server.hostname", ipTextField.getText());                 
+                }
+                
                 try {
                     Registry registry = LocateRegistry.getRegistry(hostTextField.getText(),
                             Integer.parseInt(portTextField.getText()));
@@ -156,7 +162,7 @@ public class ClientController {
 
                 } catch (RemoteException | NotBoundException e) {
                     logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                            + "      ERROR     Nie udało się połączyć z serwerem\n");
+                            + "      ERROR      Nie udało się połączyć z serwerem\n");
                     errorAlert.setHeaderText("Nie można połączyć z serwerem!");
                     errorAlert.showAndWait();
                     e.printStackTrace();
