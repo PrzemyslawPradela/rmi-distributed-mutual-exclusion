@@ -1,10 +1,10 @@
 package rmi.mutex.server;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javafx.application.Platform;
@@ -21,6 +21,7 @@ public class ServerController {
     private IpAddressValidator ipAddressValidator = new IpAddressValidator();
     private DigitsValidator digitsValidator = new DigitsValidator();
     private Alert errorAlert = new Alert(AlertType.ERROR);
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Registry registry;
     private ServerApi server;
     private boolean registryRunning = false;
@@ -49,38 +50,34 @@ public class ServerController {
 
         startBtn.setOnAction(a -> {
             if (ipTextField.getText().isEmpty()) {
-                logsTextArea.appendText(server.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano adresu IP serwera\n"));
+                logsTextArea.appendText(dateFormat.format(
+                        new Date(System.currentTimeMillis())) + "      ERROR      Nie podano adresu IP serwera\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
                 errorAlert.showAndWait();
             } else if (portTextField.getText().isEmpty()) {
-                logsTextArea.appendText(server.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano portu serwera\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Nie podano portu serwera\n");
                 errorAlert.setHeaderText("Pole portu może być puste!");
                 errorAlert.showAndWait();
             } else if (nameTextField.getText().isEmpty()) {
-                logsTextArea.appendText(server.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano nazwy serwera\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Nie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy nie może być puste!");
                 errorAlert.showAndWait();
             } else if (!ipAddressValidator.validate(ipTextField.getText())) {
-                logsTextArea.appendText(server.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tZły format adresu IP\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Zły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
             } else if (!digitsValidator.validate(portTextField.getText())) {
-                logsTextArea.appendText(server.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tZły format numeru portu\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Zły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                //System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                System.setProperty("java.rmi.server.hostname", ipTextField.getText());
                 try {
                     server = new ServerApi(logsTextArea);
                     registry = LocateRegistry.createRegistry(Integer.parseInt(portTextField.getText()));
                     registry.rebind(nameTextField.getText(), server);
-                    logsTextArea.appendText(server.getDateFormat().format(new Date(System.currentTimeMillis()))
-                            + "\tINFO\tSerwer został uruchomiony\n");
+                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                            + "      INFO        Serwer został uruchomiony\n");
 
                     registryRunning = true;
 
@@ -91,8 +88,8 @@ public class ServerController {
                     stopBtn.setDisable(false);
                     startBtn.setDisable(true);
                 } catch (RemoteException e) {
-                    logsTextArea.appendText(server.getDateFormat()
-                            .format(new Date(System.currentTimeMillis()) + "\tERROR\tPort " + portTextField.getText() + " jest już używany\n"));
+                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())
+                            + "      ERROR      Port " + portTextField.getText() + " jest już używany\n"));
                     errorAlert.setHeaderText("Port " + portTextField.getText() + " jest już używany!");
                     errorAlert.showAndWait();
                     e.printStackTrace();
@@ -100,13 +97,12 @@ public class ServerController {
             }
         });
 
-        stopBtn.setOnAction(a ->
-
-        {
+        stopBtn.setOnAction(a -> {
             try {
+                server.kickAll();
                 UnicastRemoteObject.unexportObject(registry, true);
-                logsTextArea.appendText(server.getDateFormat().format(new Date(System.currentTimeMillis()))
-                        + "\tINFO\tSerwer został wyłączony\n");
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      INFO        Serwer został wyłączony\n");
 
                 registryRunning = false;
 
@@ -116,14 +112,15 @@ public class ServerController {
 
                 startBtn.setDisable(false);
                 stopBtn.setDisable(true);
-            } catch (NoSuchObjectException e) {
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    public void handleExit() throws NoSuchObjectException {
+    public void handleExit() throws RemoteException {
         if (registryRunning) {
+            server.kickAll();
             UnicastRemoteObject.unexportObject(registry, true);
             Platform.exit();
             System.exit(0);

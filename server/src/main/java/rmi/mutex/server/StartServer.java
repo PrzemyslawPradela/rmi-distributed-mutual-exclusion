@@ -1,7 +1,7 @@
 package rmi.mutex.server;
 
 import java.io.IOException;
-import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -22,13 +22,14 @@ public class StartServer extends Application {
         Scene scene = new Scene(root);
         stage.setTitle("Server");
         stage.getIcons().add(icon);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
 
         stage.setOnCloseRequest(event -> {
             try {
                 fxmController.handleExit();
-            } catch (NoSuchObjectException e) {
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         });

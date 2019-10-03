@@ -4,7 +4,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -24,9 +26,11 @@ public class ClientController {
     private IpAddressValidator ipAddressValidator = new IpAddressValidator();
     private DigitsValidator digitsValidator = new DigitsValidator();
     private Alert errorAlert = new Alert(AlertType.ERROR);
-    private boolean connected = false;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private CopyOnWriteArrayList<Button> buttonsList=new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<TextField> txtFieldsList=new CopyOnWriteArrayList<>();
     private ClientApi client;
-    private Server server;
+    private Server server;    
 
     @FXML
     private TextArea logsTextArea;
@@ -62,49 +66,59 @@ public class ClientController {
     void initialize() {
         errorAlert.setTitle("Błąd");
 
+        buttonsList.add(connectBtn);
+        buttonsList.add(disconnectBtn);
+        buttonsList.add(enterCriticalSectionBtn);
+        buttonsList.add(leaveCriticalSectionBtn);
+
+        txtFieldsList.add(ipTextField);
+        txtFieldsList.add(hostTextField);
+        txtFieldsList.add(portTextField);
+        txtFieldsList.add(serverNameTextField);
+
         connectBtn.setOnAction(a -> {
             if (ipTextField.getText().isEmpty()) {
-                logsTextArea.appendText(client.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano adresu IP\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR     Nie podano adresu IP\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
                 errorAlert.showAndWait();
             } else if (hostTextField.getText().isEmpty()) {
-                logsTextArea.appendText(client.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano adresu IP serwera\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR     Nie podano adresu IP serwera\n");
                 errorAlert.setHeaderText("Pole adresu IP serwera nie może być puste!");
                 errorAlert.showAndWait();
             } else if (portTextField.getText().isEmpty()) {
-                logsTextArea.appendText(client.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano portu serwera\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR     Nie podano portu serwera\n");
                 errorAlert.setHeaderText("Pole portu może być puste!");
                 errorAlert.showAndWait();
             } else if (serverNameTextField.getText().isEmpty()) {
-                logsTextArea.appendText(client.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tNie podano nazwy serwera\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR     Nie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy serwera nie może być puste!");
                 errorAlert.showAndWait();
             } else if (!ipAddressValidator.validate(ipTextField.getText())
                     || !ipAddressValidator.validate(hostTextField.getText())) {
-                logsTextArea.appendText(client.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tZły format adresu IP\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR     Zły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
             } else if (!digitsValidator.validate(portTextField.getText())) {
-                logsTextArea.appendText(client.getDateFormat()
-                        .format(new Date(System.currentTimeMillis()) + "\tERROR\tZły format numeru portu\n"));
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR     Zły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                // System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                System.setProperty("java.rmi.server.hostname", ipTextField.getText());
                 try {
-                    client = new ClientApi(logsTextArea);
                     Registry registry = LocateRegistry.getRegistry(hostTextField.getText(),
                             Integer.parseInt(portTextField.getText()));
                     server = (Server) registry.lookup(serverNameTextField.getText());
-                    logsTextArea.appendText(client.getDateFormat().format(new Date(System.currentTimeMillis()))
+                    client = new ClientApi(logsTextArea,buttonsList, txtFieldsList, server);
+                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                             + server.connect(client));
 
-                    connected = true;
+                    client.disconnect();
 
                     ipTextField.setDisable(true);
                     hostTextField.setDisable(true);
@@ -141,8 +155,8 @@ public class ClientController {
                     th.start();
 
                 } catch (RemoteException | NotBoundException e) {
-                    logsTextArea.appendText(client.getDateFormat().format(
-                            new Date(System.currentTimeMillis()) + "\tERROR\tNie udało się połączyć z serwerem\n"));
+                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                            + "      ERROR     Nie udało się połączyć z serwerem\n");
                     errorAlert.setHeaderText("Nie można połączyć z serwerem!");
                     errorAlert.showAndWait();
                     e.printStackTrace();
@@ -152,9 +166,9 @@ public class ClientController {
 
         disconnectBtn.setOnAction(event -> {
             try {
-                logsTextArea.appendText(client.getDateFormat().format(new Date(System.currentTimeMillis()))
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + server.disconnect(client));
-                connected = false;
+                client.disconnect();
 
                 ipTextField.setDisable(false);
                 hostTextField.setDisable(false);
@@ -170,15 +184,16 @@ public class ClientController {
         });
 
         enterCriticalSectionBtn.setOnAction(a -> {
-            logsTextArea.appendText(client.getDateFormat().format(new Date(System.currentTimeMillis()))
-                    + "\tINFO\tZgłoszono żądanie wejścia do sekcji krytycznej\n");
+            enterCriticalSectionBtn.setDisable(true);
+            disconnectBtn.setDisable(true);
+            logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                    + "      INFO       Zgłoszono żądanie wejścia do sekcji krytycznej\n");
+
             try {
                 server.enterCriticalSection(client);
                 client.enterCriticalSection();
 
                 leaveCriticalSectionBtn.setDisable(false);
-                enterCriticalSectionBtn.setDisable(true);
-                disconnectBtn.setDisable(true);
             } catch (RemoteException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -186,7 +201,7 @@ public class ClientController {
 
         leaveCriticalSectionBtn.setOnAction(a -> {
             try {
-                logsTextArea.appendText(client.getDateFormat().format(new Date(System.currentTimeMillis()))
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + server.leaveCriticalSection(client));
                 client.leaveCriticalSection();
 
@@ -200,7 +215,7 @@ public class ClientController {
     }
 
     public void handleExit() throws RemoteException {
-        if (connected) {
+        if (client.isConnected()){
             if (client.isInCriticalSection()) {
                 server.leaveCriticalSection(client);
             } else {

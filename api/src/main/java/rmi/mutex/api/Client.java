@@ -7,4 +7,6 @@ public interface Client extends Remote {
     int request(Client clientId) throws RemoteException;
 
     void receiveMessage(String message) throws RemoteException;
+
+    void kick() throws RemoteException;
 }

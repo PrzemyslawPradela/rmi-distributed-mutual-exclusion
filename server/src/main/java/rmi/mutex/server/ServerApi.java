@@ -28,33 +28,35 @@ public class ServerApi extends UnicastRemoteObject implements Server {
     public synchronized String connect(Client clientId) throws RemoteException {
         connectedClients.add(clientId);
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tINFO\tNowy klient nawiązał połączenie z serwerem\n");
+                + "      INFO        Nowy klient nawiązał połączenie z serwerem\n");
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tEVENT\t[type=CONNECTION, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
-        return "\tINFO\tPołączono z serwerem\n";
+                + "      EVENT      [type=CONNECTION, timestamp=" + System.currentTimeMillis() + ", from=" + clientId
+                + "]\n");
+        return "      INFO        Połączono z serwerem\n";
     }
 
     @Override
     public synchronized String disconnect(Client clientId) throws RemoteException {
         connectedClients.remove(clientId);
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tINFO\tJeden klient zakończył połączenie z serwerem\n");
-        logsTextArea.appendText(
-                dateFormat.format(new Date(System.currentTimeMillis())) + "\tEVENT\t[type=DISCONNECTION, timestamp="
-                        + System.currentTimeMillis() + ", from=" + clientId + "]\n");
-        return "\tINFO\tRozłączono z serwerem\n";
+                + "      INFO        Jeden klient zakończył połączenie z serwerem\n");
+        logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                + "      EVENT      [type=DISCONNECTION, timestamp=" + System.currentTimeMillis() + ", from=" + clientId
+                + "]\n");
+        return "      INFO        Rozłączono z serwerem\n";
     }
 
     @Override
     public synchronized void enterCriticalSection(Client clientId) throws RemoteException, InterruptedException {
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tINFO\tJeden klient zgłosił żądanie wejścia do sekcji krytycznej\n");
-        logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tEVENT\t[type=WANTED, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
+                + "      INFO        Jeden klient zgłosił żądanie wejścia do sekcji krytycznej\n");
+        logsTextArea.appendText(
+                dateFormat.format(new Date(System.currentTimeMillis())) + "      EVENT      [type=WANTED, timestamp="
+                        + System.currentTimeMillis() + ", from=" + clientId + "]\n");
 
         if (connectedClients.size() > 1) {
-            clientId.receiveMessage("\tINFO\tWysyłam komunikat REQUEST do pozostałych klientów\n");
-            clientId.receiveMessage("\tINFO\tOczekiwanie na odpowiedź od pozostałych klientów\n");
+            clientId.receiveMessage("      INFO        Wysyłam komunikat REQUEST do pozostałych klientów\n");
+            clientId.receiveMessage("      INFO        Oczekiwanie na odpowiedź od pozostałych klientów\n");
         }
 
         synchronized (this) {
@@ -66,18 +68,19 @@ public class ServerApi extends UnicastRemoteObject implements Server {
         for (Client c : connectedClients) {
             if (!c.equals(clientId)) {
                 c.request(clientId);
-                clientId.receiveMessage("\tINFO\tOtrzymano komunikat\n");
-                clientId.receiveMessage(
-                        "\tMSG\t[type=REPLY, timestamp=" + System.currentTimeMillis() + ", from=" + c + "]\n");
+                clientId.receiveMessage("      INFO        Otrzymano komunikat\n");
+                clientId.receiveMessage("      MESSAGE    [type=REPLY, timestamp=" + System.currentTimeMillis()
+                        + ", from=" + c + "]\n");
             }
         }
 
         criticalSectionOccupied = true;
         logsTextArea.appendText(
-                dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\tSekcja krytyczna zajęta\n");
-        logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tEVENT\t[type=HELD, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
-        clientId.receiveMessage("\tINFO\tJesteś w sekcji krytycznej\n");
+                dateFormat.format(new Date(System.currentTimeMillis())) + "      INFO        Sekcja krytyczna zajęta\n");
+        logsTextArea.appendText(
+                dateFormat.format(new Date(System.currentTimeMillis())) + "      EVENT      [type=HELD, timestamp="
+                        + System.currentTimeMillis() + ", from=" + clientId + "]\n");
+        clientId.receiveMessage("      INFO        Jesteś w sekcji krytycznej\n");
     }
 
     @Override
@@ -87,10 +90,11 @@ public class ServerApi extends UnicastRemoteObject implements Server {
             this.notifyAll();
         }
         logsTextArea.appendText(
-                dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\tSekcja krytyczna wolna\n");
-        logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "\tEVENT\t[type=RELEASED, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
-        return "\tINFO\tOpuszczono sekcję krytyczną\n";
+                dateFormat.format(new Date(System.currentTimeMillis())) + "      INFO        Sekcja krytyczna wolna\n");
+        logsTextArea.appendText(
+                dateFormat.format(new Date(System.currentTimeMillis())) + "      EVENT      [type=RELEASED, timestamp="
+                        + System.currentTimeMillis() + ", from=" + clientId + "]\n");
+        return "      INFO        Opuszczono sekcję krytyczną\n";
     }
 
     @Override
@@ -98,7 +102,14 @@ public class ServerApi extends UnicastRemoteObject implements Server {
         return criticalSectionOccupied;
     }
 
-    public SimpleDateFormat getDateFormat() {
-        return dateFormat;
+    public void kickAll() throws RemoteException {
+        if (!connectedClients.isEmpty()) {
+            for (Client c : connectedClients) {
+                c.kick();
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      EVENT      [type=KICK, timestamp=" + System.currentTimeMillis() + ", clientID=" + c
+                        + "]\n");
+            }
+        }
     }
 }

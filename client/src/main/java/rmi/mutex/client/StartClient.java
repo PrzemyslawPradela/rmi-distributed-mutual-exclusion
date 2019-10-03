@@ -22,6 +22,7 @@ public class StartClient extends Application {
         Scene scene = new Scene(root);
         stage.setTitle("Client");
         stage.getIcons().add(icon);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
 

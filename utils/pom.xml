@@ -4,10 +4,10 @@
     <parent>
         <groupId>rmi.mutex</groupId>
         <artifactId>rmi-distributed-mutual-exclusion</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <groupId>rmi.mutex.utils</groupId>
     <artifactId>utils</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
 </project>
