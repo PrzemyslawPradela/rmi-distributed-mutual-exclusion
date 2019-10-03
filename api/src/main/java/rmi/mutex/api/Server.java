@@ -8,7 +8,7 @@ public interface Server extends Remote {
 
     String disconnect(Client clientId) throws RemoteException;
 
-    String enterCriticalSection(Client clientId) throws RemoteException;
+    void enterCriticalSection(Client clientId) throws RemoteException, InterruptedException;
 
     String leaveCriticalSection(Client clientId) throws RemoteException;
 

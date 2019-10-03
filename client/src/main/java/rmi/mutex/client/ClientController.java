@@ -173,14 +173,13 @@ public class ClientController {
             logsTextArea.appendText(client.getDateFormat().format(new Date(System.currentTimeMillis()))
                     + "\tINFO\tZgłoszono żądanie wejścia do sekcji krytycznej\n");
             try {
-                logsTextArea.appendText(client.getDateFormat().format(new Date(System.currentTimeMillis()))
-                        + server.enterCriticalSection(client));
+                server.enterCriticalSection(client);
                 client.enterCriticalSection();
 
                 leaveCriticalSectionBtn.setDisable(false);
                 enterCriticalSectionBtn.setDisable(true);
                 disconnectBtn.setDisable(true);
-            } catch (RemoteException e) {
+            } catch (RemoteException | InterruptedException e) {
                 e.printStackTrace();
             }
         });

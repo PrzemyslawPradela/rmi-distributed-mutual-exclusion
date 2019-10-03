@@ -46,7 +46,7 @@ public class ServerApi extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public synchronized String enterCriticalSection(Client clientId) throws RemoteException {
+    public synchronized void enterCriticalSection(Client clientId) throws RemoteException, InterruptedException {
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                 + "\tINFO\tJeden klient zgłosił żądanie wejścia do sekcji krytycznej\n");
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
@@ -55,26 +55,37 @@ public class ServerApi extends UnicastRemoteObject implements Server {
         if (connectedClients.size() > 1) {
             clientId.receiveMessage("\tINFO\tWysyłam komunikat REQUEST do pozostałych klientów\n");
             clientId.receiveMessage("\tINFO\tOczekiwanie na odpowiedź od pozostałych klientów\n");
-            for (Client c : connectedClients) {
-                if (!c.equals(clientId)) {
-                    c.request(clientId);
-                    clientId.receiveMessage("\tINFO\tOtrzymano komunikat\n");
-                    clientId.receiveMessage(
-                            "\tMSG\t[type=REPLY, timestamp=" + System.currentTimeMillis() + ", from=" + c + "]\n");
-                }
+        }
+
+        synchronized (this) {
+            while (criticalSectionOccupied) {
+                wait();
             }
         }
+
+        for (Client c : connectedClients) {
+            if (!c.equals(clientId)) {
+                c.request(clientId);
+                clientId.receiveMessage("\tINFO\tOtrzymano komunikat\n");
+                clientId.receiveMessage(
+                        "\tMSG\t[type=REPLY, timestamp=" + System.currentTimeMillis() + ", from=" + c + "]\n");
+            }
+        }
+
         criticalSectionOccupied = true;
         logsTextArea.appendText(
                 dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\tSekcja krytyczna zajęta\n");
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                 + "\tEVENT\t[type=HELD, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
-        return "\tINFO\tJesteś w sekcji krytycznej\n";
+        clientId.receiveMessage("\tINFO\tJesteś w sekcji krytycznej\n");
     }
 
     @Override
     public synchronized String leaveCriticalSection(Client clientId) throws RemoteException {
-        criticalSectionOccupied = false;
+        synchronized (this) {
+            criticalSectionOccupied = false;
+            this.notifyAll();
+        }
         logsTextArea.appendText(
                 dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\tSekcja krytyczna wolna\n");
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))

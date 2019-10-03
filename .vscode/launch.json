@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - StartClient",
+            "request": "launch",
+            "mainClass": "rmi.mutex.client/rmi.mutex.client.StartClient",
+            "projectName": "client"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - StartServer",
+            "request": "launch",
+            "mainClass": "rmi.mutex.server/rmi.mutex.server.StartServer",
+            "projectName": "server"
+        }
+    ]
+}
