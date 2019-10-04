@@ -31,7 +31,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label alignment="CENTER" prefHeight="35.0" prefWidth="198.0" text="Twój adres IP" textAlignment="CENTER">
+            <Label fx:id="ipLabel" alignment="CENTER" prefHeight="35.0" prefWidth="198.0" text="Twój adres IP" textAlignment="CENTER">
                <font>
                   <Font name="System Bold" size="22.0" />
                </font>

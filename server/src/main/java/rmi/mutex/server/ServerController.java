@@ -1,5 +1,7 @@
 package rmi.mutex.server;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -50,32 +52,34 @@ public class ServerController {
     void initialize() {
         errorAlert.setTitle("Błąd");
 
-        //ipTextField.setText(ip);
-
         startBtn.setOnAction(a -> {
             if (ipTextField.getText().isEmpty()) {
-                logsTextArea.appendText(dateFormat.format(
-                        new Date(System.currentTimeMillis())) + "      ERROR      Nie podano adresu IP serwera\n");
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR      Nie podano adresu IP serwera\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
                 errorAlert.showAndWait();
             } else if (portTextField.getText().isEmpty()) {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Nie podano portu serwera\n");
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR      Nie podano portu serwera\n");
                 errorAlert.setHeaderText("Pole portu może być puste!");
                 errorAlert.showAndWait();
             } else if (nameTextField.getText().isEmpty()) {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Nie podano nazwy serwera\n");
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR      Nie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy nie może być puste!");
                 errorAlert.showAndWait();
             } else if (!ipAddressValidator.validate(ipTextField.getText())) {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Zły format adresu IP\n");
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR      Zły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
             } else if (!digitsValidator.validate(portTextField.getText())) {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + "      ERROR      Zły format numeru portu\n");
+                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
+                        + "      ERROR      Zły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                
+
                 if (!SystemUtils.IS_OS_WINDOWS) {
                     System.setProperty("java.rmi.server.hostname", ipTextField.getText());
                 }
@@ -83,7 +87,8 @@ public class ServerController {
                 try {
                     server = new ServerApi(logsTextArea);
                     registry = LocateRegistry.createRegistry(Integer.parseInt(portTextField.getText()));
-                    registry.rebind(nameTextField.getText(), server);
+                    Naming.rebind("rmi://" + ipTextField.getText() + ":" + portTextField.getText() + "/"
+                            + nameTextField.getText(), server);
                     logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                             + "      INFO        Serwer został uruchomiony\n");
 
@@ -95,10 +100,11 @@ public class ServerController {
 
                     stopBtn.setDisable(false);
                     startBtn.setDisable(true);
-                } catch (RemoteException e) {
+                } catch (RemoteException | MalformedURLException e) {
                     logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                            + "      ERROR      Port " + portTextField.getText() + " jest już używany\n");
-                    errorAlert.setHeaderText("Port " + portTextField.getText() + " jest już używany!");
+                            + "      ERROR      Nie można uruchomić serwera. Port w użyciu lub nieprawidłowy adres IP\n");
+                    errorAlert.setHeaderText("Nie można uruchomić serwera!");
+                    errorAlert.setContentText("Port w użyciu lub nieprawidłowy adres IP");
                     errorAlert.showAndWait();
                     e.printStackTrace();
                 }
@@ -107,6 +113,7 @@ public class ServerController {
 
         stopBtn.setOnAction(a -> {
             try {
+                stopBtn.setDisable(true);
                 server.kickAll();
                 UnicastRemoteObject.unexportObject(registry, true);
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
@@ -118,8 +125,7 @@ public class ServerController {
                 portTextField.setDisable(false);
                 nameTextField.setDisable(false);
 
-                startBtn.setDisable(false);
-                stopBtn.setDisable(true);
+                startBtn.setDisable(false);                
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

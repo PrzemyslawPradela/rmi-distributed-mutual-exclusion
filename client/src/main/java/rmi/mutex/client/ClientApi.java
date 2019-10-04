@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -14,23 +14,22 @@ import rmi.mutex.api.Client;
 import rmi.mutex.api.Server;
 
 public class ClientApi extends UnicastRemoteObject implements Client {
-    private static final long serialVersionUID = 8817066730528372707L;
+    private static final long serialVersionUID = 1L;
     private boolean inCriticalSection;
     private boolean connected;
     private SimpleDateFormat dateFormat;
     private TextArea logsTextArea;
-    private CopyOnWriteArrayList<Button> buttonsList;
-    private CopyOnWriteArrayList<TextField> txtFieldsList;
+    private Vector<Button> buttonsList;
+    private Vector<TextField> txtFieldsList;
     private Server server;
 
-    public ClientApi(TextArea logsTextArea,CopyOnWriteArrayList<Button> buttonsList,CopyOnWriteArrayList<TextField> txtFieldsList, Server server) throws RemoteException {
+    public ClientApi(TextArea logsTextArea,Vector<Button> buttonsList,Vector<TextField> txtFieldsList) throws RemoteException {
         this.inCriticalSection = false;
         this.connected = false;
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.logsTextArea = logsTextArea;
         this.buttonsList = buttonsList;
         this.txtFieldsList = txtFieldsList;
-        this.server = server;
     }
 
     @Override
@@ -95,5 +94,13 @@ public class ClientApi extends UnicastRemoteObject implements Client {
 
     public void disconnect() {
         connected = false;
+    }
+
+    public void connect() {
+        connected = true;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
     }
 }

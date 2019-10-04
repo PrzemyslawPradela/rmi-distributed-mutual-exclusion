@@ -1,12 +1,12 @@
 package rmi.mutex.client;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Vector;
 
 import org.apache.commons.lang3.SystemUtils;
 
@@ -29,10 +29,11 @@ public class ClientController {
     private DigitsValidator digitsValidator = new DigitsValidator();
     private Alert errorAlert = new Alert(AlertType.ERROR);
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private CopyOnWriteArrayList<Button> buttonsList=new CopyOnWriteArrayList<>();
-    private CopyOnWriteArrayList<TextField> txtFieldsList=new CopyOnWriteArrayList<>();
+    private Vector<Button> buttonsList = new Vector<Button>();
+    private Vector<TextField> txtFieldsList = new Vector<TextField>();
     private ClientApi client;
-    private Server server;    
+    private Server server;
+    private boolean running = false;
 
     @FXML
     private TextArea logsTextArea;
@@ -51,6 +52,9 @@ public class ClientController {
 
     @FXML
     private Label criticalSectionStatus;
+
+    @FXML
+    private Label ipLabel;
 
     @FXML
     private Button connectBtn;
@@ -78,8 +82,13 @@ public class ClientController {
         txtFieldsList.add(portTextField);
         txtFieldsList.add(serverNameTextField);
 
+        if (SystemUtils.IS_OS_WINDOWS) {
+            ipTextField.setVisible(false);
+            ipLabel.setVisible(false);
+        }
+
         connectBtn.setOnAction(a -> {
-            if (ipTextField.getText().isEmpty()) {
+            if (!SystemUtils.IS_OS_WINDOWS && ipTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + "      ERROR      Nie podano adresu IP\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
@@ -99,7 +108,7 @@ public class ClientController {
                         + "      ERROR      Nie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy serwera nie może być puste!");
                 errorAlert.showAndWait();
-            } else if (!ipAddressValidator.validate(ipTextField.getText())
+            } else if (!SystemUtils.IS_OS_WINDOWS && !ipAddressValidator.validate(ipTextField.getText())
                     || !ipAddressValidator.validate(hostTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + "      ERROR      Zły format adresu IP\n");
@@ -111,20 +120,20 @@ public class ClientController {
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
-                
-                if (!SystemUtils.IS_OS_WINDOWS) {
-                    System.setProperty("java.rmi.server.hostname", ipTextField.getText());                 
-                }
-                
-                try {
-                    Registry registry = LocateRegistry.getRegistry(hostTextField.getText(),
-                            Integer.parseInt(portTextField.getText()));
-                    server = (Server) registry.lookup(serverNameTextField.getText());
-                    client = new ClientApi(logsTextArea,buttonsList, txtFieldsList, server);
-                    logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                            + server.connect(client));
 
-                    client.disconnect();
+                if (!SystemUtils.IS_OS_WINDOWS) {
+                    System.setProperty("java.rmi.server.hostname", ipTextField.getText());
+                }
+
+                try {
+                    client = new ClientApi(logsTextArea, buttonsList, txtFieldsList);
+                    running = true;
+                    server = (Server) Naming.lookup("rmi://" + hostTextField.getText() + ":" + portTextField.getText()
+                            + "/" + serverNameTextField.getText());
+                    logsTextArea.appendText(
+                            dateFormat.format(new Date(System.currentTimeMillis())) + server.connect(client));
+                    client.connect();
+                    client.setServer(server);
 
                     ipTextField.setDisable(true);
                     hostTextField.setDisable(true);
@@ -160,7 +169,7 @@ public class ClientController {
                     th.setDaemon(true);
                     th.start();
 
-                } catch (RemoteException | NotBoundException e) {
+                } catch (RemoteException | NotBoundException | MalformedURLException e) {
                     logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                             + "      ERROR      Nie udało się połączyć z serwerem\n");
                     errorAlert.setHeaderText("Nie można połączyć z serwerem!");
@@ -172,8 +181,8 @@ public class ClientController {
 
         disconnectBtn.setOnAction(event -> {
             try {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + server.disconnect(client));
+                logsTextArea.appendText(
+                        dateFormat.format(new Date(System.currentTimeMillis())) + server.disconnect(client));
                 client.disconnect();
 
                 ipTextField.setDisable(false);
@@ -207,8 +216,8 @@ public class ClientController {
 
         leaveCriticalSectionBtn.setOnAction(a -> {
             try {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + server.leaveCriticalSection(client));
+                logsTextArea.appendText(
+                        dateFormat.format(new Date(System.currentTimeMillis())) + server.leaveCriticalSection(client));
                 client.leaveCriticalSection();
 
                 leaveCriticalSectionBtn.setDisable(true);
@@ -221,13 +230,15 @@ public class ClientController {
     }
 
     public void handleExit() throws RemoteException {
-        if (client.isConnected()){
-            if (client.isInCriticalSection()) {
-                server.leaveCriticalSection(client);
-            } else {
-                server.disconnect(client);
-                Platform.exit();
-                System.exit(0);
+        if (running) {
+            if (client.isConnected()) {
+                if (client.isInCriticalSection()) {
+                    server.leaveCriticalSection(client);
+                } else {
+                    server.disconnect(client);
+                    Platform.exit();
+                    System.exit(0);
+                }
             }
         } else {
             Platform.exit();
