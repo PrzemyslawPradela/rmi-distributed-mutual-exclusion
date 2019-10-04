@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -19,11 +19,12 @@ public class ClientApi extends UnicastRemoteObject implements Client {
     private boolean connected;
     private SimpleDateFormat dateFormat;
     private TextArea logsTextArea;
-    private Vector<Button> buttonsList;
-    private Vector<TextField> txtFieldsList;
+    private CopyOnWriteArrayList<Button> buttonsList;
+    private CopyOnWriteArrayList<TextField> txtFieldsList;
     private Server server;
 
-    public ClientApi(TextArea logsTextArea,Vector<Button> buttonsList,Vector<TextField> txtFieldsList) throws RemoteException {
+    public ClientApi(TextArea logsTextArea, CopyOnWriteArrayList<Button> buttonsList,
+            CopyOnWriteArrayList<TextField> txtFieldsList) throws RemoteException {
         this.inCriticalSection = false;
         this.connected = false;
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -62,7 +63,7 @@ public class ClientApi extends UnicastRemoteObject implements Client {
             });
         }
         Platform.runLater(() -> {
-            txtFieldsList.forEach(tf->tf.setDisable(false));
+            txtFieldsList.forEach(tf -> tf.setDisable(false));
             buttonsList.get(0).setDisable(false);
             buttonsList.get(1).setDisable(true);
             buttonsList.get(2).setDisable(true);
@@ -73,7 +74,7 @@ public class ClientApi extends UnicastRemoteObject implements Client {
                 + "      INFO        Połączenie z serwerem zostało przerwane\n");
         server = null;
         System.gc();
-        System.runFinalization();           
+        System.runFinalization();
     }
 
     public boolean isInCriticalSection() {

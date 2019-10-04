@@ -6,9 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
-
-import org.apache.commons.lang3.SystemUtils;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -29,8 +27,8 @@ public class ClientController {
     private DigitsValidator digitsValidator = new DigitsValidator();
     private Alert errorAlert = new Alert(AlertType.ERROR);
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private Vector<Button> buttonsList = new Vector<Button>();
-    private Vector<TextField> txtFieldsList = new Vector<TextField>();
+    private CopyOnWriteArrayList<Button> buttonsList = new CopyOnWriteArrayList<Button>();
+    private CopyOnWriteArrayList<TextField> txtFieldsList = new CopyOnWriteArrayList<TextField>();
     private ClientApi client;
     private Server server;
     private boolean running = false;
@@ -52,9 +50,6 @@ public class ClientController {
 
     @FXML
     private Label criticalSectionStatus;
-
-    @FXML
-    private Label ipLabel;
 
     @FXML
     private Button connectBtn;
@@ -82,13 +77,8 @@ public class ClientController {
         txtFieldsList.add(portTextField);
         txtFieldsList.add(serverNameTextField);
 
-        if (SystemUtils.IS_OS_WINDOWS) {
-            ipTextField.setVisible(false);
-            ipLabel.setVisible(false);
-        }
-
         connectBtn.setOnAction(a -> {
-            if (!SystemUtils.IS_OS_WINDOWS && ipTextField.getText().isEmpty()) {
+            if (ipTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + "      ERROR      Nie podano adresu IP\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
@@ -108,7 +98,7 @@ public class ClientController {
                         + "      ERROR      Nie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy serwera nie może być puste!");
                 errorAlert.showAndWait();
-            } else if (!SystemUtils.IS_OS_WINDOWS && !ipAddressValidator.validate(ipTextField.getText())
+            } else if (!ipAddressValidator.validate(ipTextField.getText())
                     || !ipAddressValidator.validate(hostTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + "      ERROR      Zły format adresu IP\n");
@@ -121,9 +111,7 @@ public class ClientController {
                 errorAlert.showAndWait();
             } else {
 
-                if (!SystemUtils.IS_OS_WINDOWS) {
-                    System.setProperty("java.rmi.server.hostname", ipTextField.getText());
-                }
+                System.setProperty("java.rmi.server.hostname", ipTextField.getText());
 
                 try {
                     client = new ClientApi(logsTextArea, buttonsList, txtFieldsList);
@@ -209,7 +197,7 @@ public class ClientController {
                 client.enterCriticalSection();
 
                 leaveCriticalSectionBtn.setDisable(false);
-            } catch (RemoteException | InterruptedException e) {
+            } catch (RemoteException | InterruptedException e) {                
                 e.printStackTrace();
             }
         });

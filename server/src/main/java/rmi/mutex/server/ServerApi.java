@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javafx.scene.control.TextArea;
 import rmi.mutex.api.Client;
@@ -12,13 +12,13 @@ import rmi.mutex.api.Server;
 
 public class ServerApi extends UnicastRemoteObject implements Server {
     private static final long serialVersionUID = 1L;
-    private Vector<Client> connectedClients;
+    private CopyOnWriteArrayList<Client> connectedClients;
     private SimpleDateFormat dateFormat;
     private boolean criticalSectionOccupied;
     private TextArea logsTextArea;
 
     public ServerApi(TextArea logsTextArea) throws RemoteException {
-        this.connectedClients = new Vector<Client>();
+        this.connectedClients = new CopyOnWriteArrayList<Client>();
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.criticalSectionOccupied = false;
         this.logsTextArea = logsTextArea;
@@ -112,4 +112,9 @@ public class ServerApi extends UnicastRemoteObject implements Server {
             }
         }
     }
+
+    public CopyOnWriteArrayList<Client> getConnectedClients() {
+        return connectedClients;
+    }
+
 }
