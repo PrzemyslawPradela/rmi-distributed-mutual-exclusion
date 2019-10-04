@@ -14,7 +14,7 @@ import rmi.mutex.api.Client;
 import rmi.mutex.api.Server;
 
 public class ClientApi extends UnicastRemoteObject implements Client {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6933774609374036970L;
     private boolean inCriticalSection;
     private boolean connected;
     private SimpleDateFormat dateFormat;
@@ -38,12 +38,11 @@ public class ClientApi extends UnicastRemoteObject implements Client {
         while (inCriticalSection) {
         }
         logsTextArea.appendText(
-                dateFormat.format(new Date(System.currentTimeMillis())) + "      INFO       Otrzymano komunikat\n");
-        logsTextArea.appendText(
-                dateFormat.format(new Date(System.currentTimeMillis())) + "      MESSAGE    [type=REQUEST, timestamp="
-                        + System.currentTimeMillis() + ", from=" + clientId + "]\n");
+                dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\t\tOtrzymano komunikat\n");
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "      INFO       Wysłano odpowiedź na komunikat\n");
+                + "\tMESSAGE\t\t[type=REQUEST, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
+        logsTextArea.appendText(
+                dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\t\tWysłano odpowiedź na komunikat\n");
         return 1;
     }
 
@@ -71,7 +70,7 @@ public class ClientApi extends UnicastRemoteObject implements Client {
         server.disconnect(this);
         connected = false;
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                + "      INFO        Połączenie z serwerem zostało przerwane\n");
+                + "\tINFO\t\tPołączenie z serwerem zostało przerwane\n");
         server = null;
         System.gc();
         System.runFinalization();

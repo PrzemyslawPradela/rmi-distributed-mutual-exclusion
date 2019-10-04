@@ -79,34 +79,34 @@ public class ClientController {
 
         connectBtn.setOnAction(a -> {
             if (ipTextField.getText().isEmpty()) {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR      Nie podano adresu IP\n");
+                logsTextArea.appendText(
+                        dateFormat.format(new Date(System.currentTimeMillis())) + "\tERROR\t\tNie podano adresu IP\n");
                 errorAlert.setHeaderText("Pole adresu IP nie może być puste!");
                 errorAlert.showAndWait();
             } else if (hostTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR      Nie podano adresu IP serwera\n");
+                        + "\tERROR\t\tNie podano adresu IP serwera\n");
                 errorAlert.setHeaderText("Pole adresu IP serwera nie może być puste!");
                 errorAlert.showAndWait();
             } else if (portTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR      Nie podano portu serwera\n");
+                        + "\tERROR\t\tNie podano portu serwera\n");
                 errorAlert.setHeaderText("Pole portu może być puste!");
                 errorAlert.showAndWait();
             } else if (serverNameTextField.getText().isEmpty()) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR      Nie podano nazwy serwera\n");
+                        + "\tERROR\t\tNie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy serwera nie może być puste!");
                 errorAlert.showAndWait();
             } else if (!ipAddressValidator.validate(ipTextField.getText())
                     || !ipAddressValidator.validate(hostTextField.getText())) {
-                logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR      Zły format adresu IP\n");
+                logsTextArea.appendText(
+                        dateFormat.format(new Date(System.currentTimeMillis())) + "\tERROR\t\tZły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
             } else if (!digitsValidator.validate(portTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                        + "      ERROR      Zły format numeru portu\n");
+                        + "\tERROR\t\tZły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
                 errorAlert.showAndWait();
             } else {
@@ -159,7 +159,7 @@ public class ClientController {
 
                 } catch (RemoteException | NotBoundException | MalformedURLException e) {
                     logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                            + "      ERROR      Nie udało się połączyć z serwerem\n");
+                            + "\tERROR\t\tNie udało się połączyć z serwerem\n");
                     errorAlert.setHeaderText("Nie można połączyć z serwerem!");
                     errorAlert.showAndWait();
                     e.printStackTrace();
@@ -190,14 +190,14 @@ public class ClientController {
             enterCriticalSectionBtn.setDisable(true);
             disconnectBtn.setDisable(true);
             logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
-                    + "      INFO       Zgłoszono żądanie wejścia do sekcji krytycznej\n");
+                    + "\tINFO\t\tZgłoszono żądanie wejścia do sekcji krytycznej\n");
 
             try {
                 server.enterCriticalSection(client);
                 client.enterCriticalSection();
 
                 leaveCriticalSectionBtn.setDisable(false);
-            } catch (RemoteException | InterruptedException e) {                
+            } catch (RemoteException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
