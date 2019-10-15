@@ -14,7 +14,7 @@ Project is created with:
 	
 ## Setup
 1. Install Java Runtime Environment.
-2. Install [Maven](https://maven.apache.org/download.cgi)
+2. Install [Maven](https://maven.apache.org/install.html)
 3. Clone this repository.
 4. To run this project, compile it and run it using mvn:
 
