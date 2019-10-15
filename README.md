@@ -12,9 +12,10 @@ Project is created with:
 * Maven: 3.6.2
 	
 ## Setup
-Install Java Runtime Environment and Maven.
-Clone this repository.
-To run this project, compile it and run it using mvn:
+1. Install Java Runtime Environment.
+2. Install [Maven](https://maven.apache.org/download.cgi)
+3. Clone this repository.
+4. To run this project, compile it and run it using mvn:
 
 *Server appliction*
 ```
