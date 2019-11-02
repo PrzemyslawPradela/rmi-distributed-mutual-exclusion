@@ -21,13 +21,13 @@ Project is created with:
 *Server appliction*
 ```
 $ cd ../rmi-distributed-mutual-exclusion
-$ mvn clean install
+$ mvn compile
 $ mvn exec:java -pl server -Dexec.mainClass=rmi.mutex.server.StartServer
 ```
 
 *Client appliction*
 ```
 $ cd ../rmi-distributed-mutual-exclusion
-$ mvn clean install
+$ mvn compile
 $ mvn exec:java -pl client -Dexec.mainClass=rmi.mutex.client.StartClient
 ```
