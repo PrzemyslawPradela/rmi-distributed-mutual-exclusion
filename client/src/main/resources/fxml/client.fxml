@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="windowPane" maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="609.0" prefWidth="940.0" xmlns="http://javafx.com/javafx/11.0.1"
+      fx:controller="rmi.mutex.client.ClientController">
+    <ScrollPane layoutX="36.0" layoutY="217.0">
+        <TextArea fx:id="logsTextArea" editable="false" prefHeight="325.0" prefWidth="871.0"
+                  style="-fx-control-inner-background:#000000; -fx-highlight-fill: #00ff00; -fx-highlight-text-fill: #000000; -fx-text-fill: #00ff00;"/>
+    </ScrollPane>
+    <GridPane layoutX="36.0" layoutY="31.0" prefHeight="167.0" prefWidth="356.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="195.0" minWidth="10.0" prefWidth="195.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="161.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Label fx:id="ipLabel" alignment="CENTER" prefHeight="35.0" prefWidth="198.0" text="Twój adres IP"
+               textAlignment="CENTER">
+            <font>
+                <Font name="System Bold" size="22.0"/>
+            </font>
+        </Label>
+        <Label alignment="CENTER" prefHeight="35.0" prefWidth="195.0" text="IP serwera" textAlignment="CENTER"
+               GridPane.rowIndex="1">
+            <font>
+                <Font name="System Bold" size="22.0"/>
+            </font>
+        </Label>
+        <Label alignment="CENTER" prefHeight="35.0" prefWidth="197.0" text="Port" textAlignment="CENTER"
+               GridPane.rowIndex="2">
+            <font>
+                <Font name="System Bold" size="22.0"/>
+            </font>
+        </Label>
+        <Label alignment="CENTER" prefHeight="35.0" prefWidth="196.0" text="Nazwa serwera" textAlignment="CENTER"
+               GridPane.rowIndex="3">
+            <font>
+                <Font name="System Bold" size="22.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="ipTextField" alignment="CENTER" prefHeight="37.0" prefWidth="156.0"
+                   promptText="np. 192.168.1.10" GridPane.columnIndex="1">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </TextField>
+        <TextField fx:id="hostTextField" alignment="CENTER" promptText="np. 192.168.1.1" GridPane.columnIndex="1"
+                   GridPane.rowIndex="1">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </TextField>
+        <TextField fx:id="portTextField" alignment="CENTER" promptText="np. 1099" GridPane.columnIndex="1"
+                   GridPane.rowIndex="2">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </TextField>
+        <TextField fx:id="serverNameTextField" alignment="CENTER" promptText="np. Serwer RMI"
+                   GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <font>
+                <Font size="16.0"/>
+            </font>
+        </TextField>
+    </GridPane>
+    <GridPane layoutX="433.0" layoutY="33.0" prefHeight="78.0" prefWidth="476.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="342.0" minWidth="10.0" prefWidth="331.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="233.0" minWidth="10.0" prefWidth="145.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Status sekcji krytycznej" textAlignment="CENTER"
+              wrappingWidth="330.96484375">
+            <font>
+                <Font name="System Bold" size="23.0"/>
+            </font>
+        </Text>
+        <Label fx:id="criticalSectionStatus" alignment="CENTER" prefHeight="98.0" prefWidth="145.0"
+               textAlignment="CENTER" GridPane.columnIndex="1">
+            <font>
+                <Font name="System Bold" size="24.0"/>
+            </font>
+        </Label>
+    </GridPane>
+    <GridPane layoutX="204.0" layoutY="551.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="300.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Button fx:id="connectBtn" mnemonicParsing="false" prefHeight="44.0" prefWidth="119.0" text="Połącz"
+                textAlignment="CENTER">
+            <font>
+                <Font size="20.0"/>
+            </font>
+        </Button>
+        <Button fx:id="disconnectBtn" disable="true" mnemonicParsing="false" prefHeight="44.0" prefWidth="119.0"
+                text="Rozłącz" GridPane.columnIndex="2">
+            <font>
+                <Font size="20.0"/>
+            </font>
+        </Button>
+    </GridPane>
+    <GridPane layoutX="413.0" layoutY="152.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Button fx:id="enterCriticalSectionBtn" disable="true" mnemonicParsing="false" prefHeight="37.0"
+                prefWidth="208.0" text="Wejdź do sekcji krytycznej" textAlignment="CENTER">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Button>
+        <Button fx:id="leaveCriticalSectionBtn" disable="true" mnemonicParsing="false" prefHeight="37.0"
+                prefWidth="208.0" text="Wyjdź z sekcji krytycznej" textAlignment="CENTER" GridPane.columnIndex="2">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Button>
+    </GridPane>
+</Pane>

@@ -17,20 +17,20 @@ Project is created with:
 2. Install [Maven](https://maven.apache.org/install.html)
 3. Clone this repository
 4. Install modules dependencies
-```
-$ cd ../rmi-distributed-mutual-exclusion
-$ mvn install
-```
+    ```
+    $ cd ../rmi-distributed-mutual-exclusion
+    $ mvn install
+    ```
 5. To run this project:
 
-*Server appliction*
-```
-$ cd ../rmi-distributed-mutual-exclusion/server
-$ mvn javafx:run
-```
+    *Server appliction*
+    ```
+    $ cd ../rmi-distributed-mutual-exclusion/server
+    $ mvn javafx:run
+    ```
 
-*Client appliction*
-```
-$ cd ../rmi-distributed-mutual-exclusion/client
-$ mvn javafx:run
-```
+    *Client appliction*
+    ```
+    $ cd ../rmi-distributed-mutual-exclusion/client
+    $ mvn javafx:run
+    ```
