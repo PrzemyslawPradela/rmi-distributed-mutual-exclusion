@@ -1,11 +1,5 @@
 package rmi.mutex.client;
 
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -13,18 +7,24 @@ import javafx.scene.control.TextField;
 import rmi.mutex.api.Client;
 import rmi.mutex.api.Server;
 
-public class ClientApi extends UnicastRemoteObject implements Client {
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+class ClientApi extends UnicastRemoteObject implements Client {
     private static final long serialVersionUID = -6933774609374036970L;
-    private boolean inCriticalSection;
+    private final SimpleDateFormat dateFormat;
     private boolean connected;
-    private SimpleDateFormat dateFormat;
-    private TextArea logsTextArea;
-    private CopyOnWriteArrayList<Button> buttonsList;
-    private CopyOnWriteArrayList<TextField> txtFieldsList;
+    private final TextArea logsTextArea;
+    private final CopyOnWriteArrayList<Button> buttonsList;
+    private final CopyOnWriteArrayList<TextField> txtFieldsList;
+    private volatile boolean inCriticalSection;
     private Server server;
 
-    public ClientApi(TextArea logsTextArea, CopyOnWriteArrayList<Button> buttonsList,
-            CopyOnWriteArrayList<TextField> txtFieldsList) throws RemoteException {
+    ClientApi(TextArea logsTextArea, CopyOnWriteArrayList<Button> buttonsList,
+              CopyOnWriteArrayList<TextField> txtFieldsList) throws RemoteException {
         this.inCriticalSection = false;
         this.connected = false;
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -34,20 +34,18 @@ public class ClientApi extends UnicastRemoteObject implements Client {
     }
 
     @Override
-    public synchronized int request(Client clientId) throws RemoteException {
-        while (inCriticalSection) {
-        }
+    public synchronized void request(Client clientId) {
+        while (inCriticalSection) ;
         logsTextArea.appendText(
                 dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\t\tOtrzymano komunikat\n");
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                 + "\tMESSAGE\t\t[type=REQUEST, timestamp=" + System.currentTimeMillis() + ", from=" + clientId + "]\n");
         logsTextArea.appendText(
                 dateFormat.format(new Date(System.currentTimeMillis())) + "\tINFO\t\tWysłano odpowiedź na komunikat\n");
-        return 1;
     }
 
     @Override
-    public synchronized void receiveMessage(String message) throws RemoteException {
+    public synchronized void receiveMessage(String message) {
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis())) + message);
     }
 
@@ -76,31 +74,31 @@ public class ClientApi extends UnicastRemoteObject implements Client {
         System.runFinalization();
     }
 
-    public boolean isInCriticalSection() {
+    boolean isInCriticalSection() {
         return inCriticalSection;
     }
 
-    public void enterCriticalSection() {
+    void enterCriticalSection() {
         inCriticalSection = true;
     }
 
-    public void leaveCriticalSection() {
+    void leaveCriticalSection() {
         inCriticalSection = false;
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return connected;
     }
 
-    public void disconnect() {
+    void disconnect() {
         connected = false;
     }
 
-    public void connect() {
+    void connect() {
         connected = true;
     }
 
-    public void setServer(Server server) {
+    void setServer(Server server) {
         this.server = server;
     }
 }

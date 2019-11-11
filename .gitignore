@@ -7,12 +7,11 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
-
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+/rmi-distributed-mutual-exclusion.iml
+/.idea/
+/client/client.iml
+/api/api.iml
+/server/server.iml
+/utils/utils.iml

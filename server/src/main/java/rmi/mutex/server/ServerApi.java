@@ -1,31 +1,31 @@
 package rmi.mutex.server;
 
+import javafx.scene.control.TextArea;
+import rmi.mutex.api.Client;
+import rmi.mutex.api.Server;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javafx.scene.control.TextArea;
-import rmi.mutex.api.Client;
-import rmi.mutex.api.Server;
-
-public class ServerApi extends UnicastRemoteObject implements Server {
+class ServerApi extends UnicastRemoteObject implements Server {
     private static final long serialVersionUID = 6177858376321750016L;
-    private CopyOnWriteArrayList<Client> connectedClients;
-    private SimpleDateFormat dateFormat;
+    private final CopyOnWriteArrayList<Client> connectedClients;
+    private final SimpleDateFormat dateFormat;
     private boolean criticalSectionOccupied;
-    private TextArea logsTextArea;
+    private final TextArea logsTextArea;
 
-    public ServerApi(TextArea logsTextArea) throws RemoteException {
-        this.connectedClients = new CopyOnWriteArrayList<Client>();
+    ServerApi(TextArea logsTextArea) throws RemoteException {
+        this.connectedClients = new CopyOnWriteArrayList<>();
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.criticalSectionOccupied = false;
         this.logsTextArea = logsTextArea;
     }
 
     @Override
-    public synchronized String connect(Client clientId) throws RemoteException {
+    public synchronized String connect(Client clientId) {
         connectedClients.add(clientId);
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                 + "\tINFO\t\tNowy klient nawiązał połączenie z serwerem\n");
@@ -36,7 +36,7 @@ public class ServerApi extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public synchronized String disconnect(Client clientId) throws RemoteException {
+    public synchronized String disconnect(Client clientId) {
         connectedClients.remove(clientId);
         logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                 + "\tINFO\t\tJeden klient zakończył połączenie z serwerem\n");
@@ -82,7 +82,7 @@ public class ServerApi extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public synchronized String leaveCriticalSection(Client clientId) throws RemoteException {
+    public synchronized String leaveCriticalSection(Client clientId) {
         synchronized (this) {
             criticalSectionOccupied = false;
             this.notifyAll();
@@ -95,11 +95,11 @@ public class ServerApi extends UnicastRemoteObject implements Server {
     }
 
     @Override
-    public synchronized boolean isCriticalSectionOccupied() throws RemoteException {
+    public synchronized boolean isCriticalSectionOccupied() {
         return criticalSectionOccupied;
     }
 
-    public void kickAll() throws RemoteException {
+    void kickAll() throws RemoteException {
         if (!connectedClients.isEmpty()) {
             for (Client c : connectedClients) {
                 c.kick();
@@ -109,7 +109,4 @@ public class ServerApi extends UnicastRemoteObject implements Server {
         }
     }
 
-    public CopyOnWriteArrayList<Client> getConnectedClients() {
-        return connectedClients;
-    }
 }

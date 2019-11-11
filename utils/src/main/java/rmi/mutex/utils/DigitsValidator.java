@@ -4,8 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DigitsValidator {
-    private Pattern pattern;
-    private Matcher matcher;
+    private final Pattern pattern;
 
     private static final String DIGITS_PATTERN = "\\d+";
 
@@ -14,7 +13,7 @@ public class DigitsValidator {
     }
 
     public boolean validate(final String digits) {
-        matcher = pattern.matcher(digits);
-        return matcher.matches();
+        Matcher matcher = pattern.matcher(digits);
+        return !matcher.matches();
     }
 }

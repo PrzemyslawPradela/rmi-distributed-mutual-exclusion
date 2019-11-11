@@ -1,14 +1,5 @@
 package rmi.mutex.server;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -19,11 +10,20 @@ import javafx.scene.control.TextField;
 import rmi.mutex.utils.DigitsValidator;
 import rmi.mutex.utils.IpAddressValidator;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ServerController {
-    private IpAddressValidator ipAddressValidator = new IpAddressValidator();
-    private DigitsValidator digitsValidator = new DigitsValidator();
-    private Alert errorAlert = new Alert(AlertType.ERROR);
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final IpAddressValidator ipAddressValidator = new IpAddressValidator();
+    private final DigitsValidator digitsValidator = new DigitsValidator();
+    private final Alert errorAlert = new Alert(AlertType.ERROR);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Registry registry;
     private ServerApi server;
     private boolean registryRunning = false;
@@ -66,12 +66,12 @@ public class ServerController {
                         + "\tERROR\t\tNie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy nie może być puste!");
                 errorAlert.showAndWait();
-            } else if (!ipAddressValidator.validate(ipTextField.getText())) {
+            } else if (ipAddressValidator.validate(ipTextField.getText())) {
                 logsTextArea.appendText(
                         dateFormat.format(new Date(System.currentTimeMillis())) + "\tERROR\t\tZły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
-            } else if (!digitsValidator.validate(portTextField.getText())) {
+            } else if (digitsValidator.validate(portTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + "\tERROR\t\tZły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
@@ -127,7 +127,7 @@ public class ServerController {
         });
     }
 
-    public void handleExit() throws RemoteException {
+    void handleExit() throws RemoteException {
         if (registryRunning) {
             server.kickAll();
             UnicastRemoteObject.unexportObject(registry, true);

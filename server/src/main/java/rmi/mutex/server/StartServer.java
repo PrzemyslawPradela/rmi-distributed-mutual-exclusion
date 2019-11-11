@@ -1,8 +1,5 @@
 package rmi.mutex.server;
 
-import java.io.IOException;
-import java.rmi.RemoteException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,12 +7,20 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Objects;
+
 public class StartServer extends Application {
+
+    public static void main(String[] args) {
+        launch();
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("server.fxml"));
-        Image icon = new Image(this.getClass().getResourceAsStream("server.png"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/server.fxml"));
+        Image icon = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("icon/server.png")));
         Parent root = fxmlLoader.load();
         ServerController fxmController = fxmlLoader.getController();
 
@@ -33,9 +38,5 @@ public class StartServer extends Application {
                 e.printStackTrace();
             }
         });
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

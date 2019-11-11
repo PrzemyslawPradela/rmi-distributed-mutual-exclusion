@@ -1,5 +1,15 @@
 package rmi.mutex.client;
 
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
+import rmi.mutex.api.Server;
+import rmi.mutex.utils.DigitsValidator;
+import rmi.mutex.utils.IpAddressValidator;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -8,27 +18,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
-import rmi.mutex.api.Server;
-import rmi.mutex.utils.DigitsValidator;
-import rmi.mutex.utils.IpAddressValidator;
-
 public class ClientController {
-    private IpAddressValidator ipAddressValidator = new IpAddressValidator();
-    private DigitsValidator digitsValidator = new DigitsValidator();
-    private Alert errorAlert = new Alert(AlertType.ERROR);
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private CopyOnWriteArrayList<Button> buttonsList = new CopyOnWriteArrayList<Button>();
-    private CopyOnWriteArrayList<TextField> txtFieldsList = new CopyOnWriteArrayList<TextField>();
+    private final IpAddressValidator ipAddressValidator = new IpAddressValidator();
+    private final DigitsValidator digitsValidator = new DigitsValidator();
+    private final Alert errorAlert = new Alert(AlertType.ERROR);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final CopyOnWriteArrayList<Button> buttonsList = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<TextField> txtFieldsList = new CopyOnWriteArrayList<>();
     private ClientApi client;
     private Server server;
     private boolean running = false;
@@ -98,13 +94,13 @@ public class ClientController {
                         + "\tERROR\t\tNie podano nazwy serwera\n");
                 errorAlert.setHeaderText("Pole nazwy serwera nie może być puste!");
                 errorAlert.showAndWait();
-            } else if (!ipAddressValidator.validate(ipTextField.getText())
-                    || !ipAddressValidator.validate(hostTextField.getText())) {
+            } else if (ipAddressValidator.validate(ipTextField.getText())
+                    || ipAddressValidator.validate(hostTextField.getText())) {
                 logsTextArea.appendText(
                         dateFormat.format(new Date(System.currentTimeMillis())) + "\tERROR\t\tZły format adresu IP\n");
                 errorAlert.setHeaderText("Zły format adresu IP!");
                 errorAlert.showAndWait();
-            } else if (!digitsValidator.validate(portTextField.getText())) {
+            } else if (digitsValidator.validate(portTextField.getText())) {
                 logsTextArea.appendText(dateFormat.format(new Date(System.currentTimeMillis()))
                         + "\tERROR\t\tZły format numeru portu\n");
                 errorAlert.setHeaderText("Numer portu może zawierać tylko cyfry!");
@@ -217,7 +213,7 @@ public class ClientController {
         });
     }
 
-    public void handleExit() throws RemoteException {
+    void handleExit() throws RemoteException {
         if (running) {
             if (client.isConnected()) {
                 if (client.isInCriticalSection()) {
