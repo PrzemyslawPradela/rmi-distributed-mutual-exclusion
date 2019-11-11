@@ -4,7 +4,7 @@
 * [Setup](#setup)
 
 ## General info
-Implementation of Ricart Agrawala algorithm using Java RMI and JavaFX.
+Implementation of Ricart Agrawala algorithm using Java RMI
 	
 ## Technologies
 Project is created with:
