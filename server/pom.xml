@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>rmi-distributed-mutual-exclusion</artifactId>
-        <groupId>rmi.mutex</groupId>
+        <groupId>com.pradela.mutex</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,19 +13,11 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.3</version>
                 <configuration>
-                    <mainClass>rmi.mutex.server.StartServer</mainClass>
+                    <mainClass>com.pradela.mutex.server.StartServer</mainClass>
                 </configuration>
             </plugin>
         </plugins>
@@ -37,13 +29,13 @@
             <version>13-ea+14b</version>
         </dependency>
         <dependency>
-            <groupId>rmi.mutex</groupId>
+            <groupId>com.pradela.mutex</groupId>
             <artifactId>api</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>rmi.mutex</groupId>
+            <groupId>com.pradela.mutex</groupId>
             <artifactId>utils</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>

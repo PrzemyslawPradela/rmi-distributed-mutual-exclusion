@@ -1,14 +1,14 @@
-package rmi.mutex.client;
+package com.pradela.mutex.client;
 
+import com.pradela.mutex.api.Server;
+import com.pradela.mutex.utils.DigitsValidator;
+import com.pradela.mutex.utils.IpAddressValidator;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
-import rmi.mutex.api.Server;
-import rmi.mutex.utils.DigitsValidator;
-import rmi.mutex.utils.IpAddressValidator;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;

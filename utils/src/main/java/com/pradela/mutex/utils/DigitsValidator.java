@@ -1,4 +1,4 @@
-package rmi.mutex.utils;
+package com.pradela.mutex.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

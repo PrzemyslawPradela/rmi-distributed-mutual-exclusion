@@ -1,8 +1,8 @@
-package rmi.mutex.server;
+package com.pradela.mutex.server;
 
+import com.pradela.mutex.api.Client;
+import com.pradela.mutex.api.Server;
 import javafx.scene.control.TextArea;
-import rmi.mutex.api.Client;
-import rmi.mutex.api.Server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

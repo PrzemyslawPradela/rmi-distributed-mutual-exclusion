@@ -1,5 +1,7 @@
-package rmi.mutex.server;
+package com.pradela.mutex.server;
 
+import com.pradela.mutex.utils.DigitsValidator;
+import com.pradela.mutex.utils.IpAddressValidator;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -7,8 +9,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import rmi.mutex.utils.DigitsValidator;
-import rmi.mutex.utils.IpAddressValidator;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
