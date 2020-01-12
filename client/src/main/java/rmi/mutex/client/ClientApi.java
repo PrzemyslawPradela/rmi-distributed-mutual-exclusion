@@ -1,17 +1,17 @@
-package com.pradela.mutex.client;
-
-import com.pradela.mutex.api.Client;
-import com.pradela.mutex.api.Server;
-import javafx.application.Platform;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+package rmi.mutex.client;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javafx.application.Platform;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import rmi.mutex.api.Client;
+import rmi.mutex.api.Server;
 
 class ClientApi extends UnicastRemoteObject implements Client {
     private static final long serialVersionUID = -6933774609374036970L;

@@ -1,4 +1,4 @@
-package com.pradela.mutex.api;
+package rmi.mutex.api;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

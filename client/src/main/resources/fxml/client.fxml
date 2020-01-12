@@ -6,7 +6,7 @@
 <Pane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity"
       minHeight="-Infinity"
       minWidth="-Infinity" prefHeight="609.0" prefWidth="940.0" xmlns="http://javafx.com/javafx/11.0.1"
-      fx:controller="com.pradela.mutex.client.ClientController">
+      fx:controller="rmi.mutex.client.ClientController">
     <ScrollPane layoutX="36.0" layoutY="217.0">
         <TextArea fx:id="logsTextArea" editable="false" prefHeight="325.0" prefWidth="871.0"
                   style="-fx-control-inner-background:#000000; -fx-highlight-fill: #00ff00; -fx-highlight-text-fill: #000000; -fx-text-fill: #00ff00;"/>

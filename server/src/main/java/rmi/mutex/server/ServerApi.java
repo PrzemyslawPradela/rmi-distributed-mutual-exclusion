@@ -1,14 +1,14 @@
-package com.pradela.mutex.server;
-
-import com.pradela.mutex.api.Client;
-import com.pradela.mutex.api.Server;
-import javafx.scene.control.TextArea;
+package rmi.mutex.server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javafx.scene.control.TextArea;
+import rmi.mutex.api.Client;
+import rmi.mutex.api.Server;
 
 class ServerApi extends UnicastRemoteObject implements Server {
     private static final long serialVersionUID = 6177858376321750016L;

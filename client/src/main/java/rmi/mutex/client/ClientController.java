@@ -1,14 +1,4 @@
-package com.pradela.mutex.client;
-
-import com.pradela.mutex.api.Server;
-import com.pradela.mutex.utils.DigitsValidator;
-import com.pradela.mutex.utils.IpAddressValidator;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.paint.Color;
+package rmi.mutex.client;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -17,6 +7,16 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
+import rmi.mutex.api.Server;
+import rmi.mutex.utils.DigitsValidator;
+import rmi.mutex.utils.IpAddressValidator;
 
 public class ClientController {
     private final IpAddressValidator ipAddressValidator = new IpAddressValidator();

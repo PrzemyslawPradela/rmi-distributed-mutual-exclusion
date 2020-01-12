@@ -15,3 +15,14 @@ buildNumber.properties
 /server/server.iml
 /utils/utils.iml
 /client/client.iml
+.project
+.settings/*
+.vscode/*
+api/.classpath
+api/.settings/*
+client/.classpath
+client/.settings/*
+server/.classpath
+server/.settings/*
+utils/.classpath
+utils/.settings/*

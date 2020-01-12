@@ -8,9 +8,9 @@ Implementation of Ricart Agrawala algorithm using Java RMI
 	
 ## Technologies
 Project is created with:
-* Java version: 11
-* JavaFX version: 13
-* Maven version: 3.6.0
+* Java version: 13
+* JavaFX version: 13.0.1
+* Maven version: 3.6.3
 	
 ## Setup
 1. Install Java Runtime Environment
